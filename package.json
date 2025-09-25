@@ -1,0 +1,23 @@
+{
+  "name": "codigo-abisal-server",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codigo-Inmersion/codigo-abisal-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Codigo-Inmersion/codigo-abisal-server/issues"
+  },
+  "homepage": "https://github.com/Codigo-Inmersion/codigo-abisal-server#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
