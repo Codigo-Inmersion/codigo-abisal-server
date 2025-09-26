@@ -1,6 +1,7 @@
 {
   "name": "codigo-abisal-server",
   "version": "1.0.0",
+  "type": "module",
   "main": "app.ts",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll --no-cache"
@@ -20,7 +21,8 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.2",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
