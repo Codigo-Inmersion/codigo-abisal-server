@@ -27,15 +27,15 @@ export class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  public id!: bigint;
-  public username!: string;
-  public email!: string;
-  public password!: string;
-  public name!: string;
-  public last_name!: string;
-  public role!: string;
-  public created_at!: Date;
-  public updated_at!: Date;
+  declare id: bigint;
+  declare username: string;
+  declare email: string;
+  declare password: string;
+  declare name: string;
+  declare last_name: string;
+  declare role: string;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 // 6) Inicializo (equivalente a define) y mapeo columnas/validaciones
