@@ -1,14 +1,16 @@
+
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import UserModel from "../models/UserModel.js";
+import { generateToken } from "../utils/jwt.js";
 
 interface RegisterBody {
-  username: string; // Añadir
+  username: string;
   name: string;
-  last_name: string; // Añadir
+  last_name: string;
   email: string;
   password: string;
-  role: string;
+  role?: string;
 }
 
 interface LoginBody {
@@ -22,10 +24,10 @@ export const registerController = async (
   res: Response
 ): Promise<void> => {
   try {
-    // 1. Desestructura los nuevos campos
-    const { username, name, last_name, email, password, role} = req.body;
+    // 1. Desestructura los campos
+    const { username, name, last_name, email, password, role } = req.body;
 
-    // 2. Añádelos a la validación
+    // 2. Validación
     if (!username || !name || !last_name || !email || !password) {
       res.status(400).json({ message: "Todos los campos son requeridos" });
       return;
@@ -35,7 +37,10 @@ export const registerController = async (
     const normalizedEmail = email.toLowerCase().trim();
 
     // verificar si el email ya existe
-    const existingUser = await UserModel.findOne({ where: { email: normalizedEmail } });
+    const existingUser = await UserModel.findOne({ 
+      where: { email: normalizedEmail } 
+    });
+    
     if (existingUser) {
       res.status(409).json({ message: "El email ya está registrado" });
       return;
@@ -44,19 +49,34 @@ export const registerController = async (
     // hashear contraseña
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // 3. Pasa todos los campos requeridos a .create()
+    // 3. Crear usuario
     const newUser = await UserModel.create({
       username,
       name,
       last_name,
       email: normalizedEmail,
       password: hashPassword,
-      role
+      role: role || "user", // Por defecto "user"
+    });
+
+    // 4. Generar token JWT
+    const token = generateToken({
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
     });
 
     res.status(201).json({
       message: "Usuario registrado exitosamente",
-      userId: newUser.id,
+      token,
+      user: {
+        id: newUser.id.toString(),
+        username: newUser.username,
+        email: newUser.email,
+        name: newUser.name,
+        last_name: newUser.last_name,
+        role: newUser.role,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -82,7 +102,10 @@ export const loginController = async (
     const normalizedEmail = email.toLowerCase().trim();
 
     // buscar usuario por email normalizado
-    const user = await UserModel.findOne({ where: { email: normalizedEmail } });
+    const user = await UserModel.findOne({ 
+      where: { email: normalizedEmail } 
+    });
+    
     if (!user) {
       res.status(404).json({ message: "Usuario no encontrado" });
       return;
@@ -90,12 +113,31 @@ export const loginController = async (
 
     // comparar contraseña ingresada con la hasheada en BD
     const ok = await bcrypt.compare(password, user.password);
+    
     if (!ok) {
       res.status(401).json({ message: "Contraseña incorrecta" });
       return;
     }
 
-    res.status(200).json({ message: "Login exitoso" });
+    // Generar token JWT
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    res.status(200).json({ 
+      message: "Login exitoso",
+      token,
+      user: {
+        id: user.id.toString(),
+        username: user.username,
+        email: user.email,
+        name: user.name,
+        last_name: user.last_name,
+        role: user.role,
+      },
+    });
   } catch (error) {
     res.status(500).json({
       message: error instanceof Error ? error.message : "Unexpected error",
