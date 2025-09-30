@@ -3,7 +3,8 @@ import db_connection from "../src/database/db_connection.js";
 import "dotenv/config";
 import "./models/UserModel"; 
 import "./models/ArticleModel";
-
+import authRouter from "./routes/authRoutes.js";
+import articleRouter from "./routes/articleRoutes.js";
 
  export const app = express();
  const PORT = process.env.PORT || 8080;
@@ -12,6 +13,8 @@ import "./models/ArticleModel";
  app.get("/", (_req, res) => {
   res.send("Hola API");
 });
+app.use("/auth", authRouter )
+app.use("/article", articleRouter)
 
 async function startServer() {
   try {

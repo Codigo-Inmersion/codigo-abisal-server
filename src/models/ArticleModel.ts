@@ -30,17 +30,17 @@ export class Article
   extends Model<ArticleAttributes, ArticleCreationAttributes>
   implements ArticleAttributes
 {
-  public id!: bigint;
-  public creator_id!: bigint;
-  public title!: string;
-  public description!: string;
-  public content!: string;
-  public category!: string;
-  public species!: string;
-  public image!: string;
-  public references!: string;
-  public created_at!: Date;
-  public updated_at!: Date;
+  declare id: bigint;
+  declare creator_id: bigint;
+  declare title: string;
+  declare description: string;
+  declare content: string;
+  declare category: string;
+  declare species: string;
+  declare image: string;
+  declare references: string;
+  declare created_at: Date;
+  declare updated_at: Date;
 
 }
 
