@@ -46,6 +46,18 @@ export const registerController = async (
       return;
     }
 
+    // verificar si el usuario ya existe
+    const normalizedUserName = username.toLowerCase().trim();
+
+    const existingUsername = await UserModel.findOne({ 
+      where: { username: normalizedUserName } 
+    });
+    
+    if (existingUsername) {
+      res.status(409).json({ message: "El usuario ya está registrado" });
+      return;
+    }
+
     // hashear contraseña
     const hashPassword = await bcrypt.hash(password, 10);
 

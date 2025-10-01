@@ -10,8 +10,8 @@ const emailRule = body("email")
 
 const passwordRule = body("password")
   .isString()
-  .isLength({ min: 6, max: 255 })
-  .withMessage("La contraseña debe tener al menos 6 caracteres");
+  .isLength({ min: 8, max: 255 })
+  .withMessage("La contraseña debe tener al menos 8 caracteres");
 
 export const registerValidator = [
   body("username")
