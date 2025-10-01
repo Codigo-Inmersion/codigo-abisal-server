@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken, TokenPayload } from "../utils/jwt.js";
+import { validationResult } from "express-validator";
 
 // Extender el tipo Request para incluir user
 declare global {
@@ -73,3 +74,29 @@ export const requireRole = (...allowedRoles: string[]) => {
     next();
   };
 };
+
+
+export function handleValidation(req: Request, res: Response, next: NextFunction) {
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    const flatErrors = result.array({ onlyFirstError: true }).flatMap((err: any) => {
+      // Si es AlternativeValidationError (oneOf), aplanamos sus nestedErrors
+      if (err?.nestedErrors && Array.isArray(err.nestedErrors)) {
+        return err.nestedErrors.map((ne: any) => ({
+          field: ne.path ?? ne.param ?? "unknown",
+          msg: ne.msg,
+        }));
+      }
+      // ValidationError normal
+      return [{ field: err.path ?? err.param ?? "unknown", msg: err.msg }];
+    });
+
+    return res.status(422).json({
+      message: "Errores de validación",
+      errors: flatErrors,
+    });
+  }
+
+  next();
+}
