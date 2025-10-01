@@ -13,9 +13,9 @@ articleRouter.get("/", getAllArticles);
 articleRouter.get("/:id", getArticleById, idParamValidators,checkValidations);
 
 // Rutas protegidas (handleValidation, createArticle, createArticleValidators, checkValidations);
-articleRouter.post("/", requireRole("admin"), authMiddleware, createArticle, authMiddleware, handleValidation, createArticleValidators,);
-articleRouter.put("/:id", requireRole("admin"), authMiddleware, handleValidation, updateArticle, updateArticleValidators, checkValidations);
-articleRouter.delete("/:id",requireRole("admin"), authMiddleware, handleValidation, deleteArticle);
+articleRouter.post("/", authMiddleware, requireRole("admin"),  createArticle, handleValidation, createArticleValidators,);
+articleRouter.put("/:id", authMiddleware, requireRole("admin"),  handleValidation, updateArticle, updateArticleValidators, checkValidations);
+articleRouter.delete("/:id",authMiddleware, requireRole("admin"),  handleValidation, deleteArticle);
 
 
 export default articleRouter;
