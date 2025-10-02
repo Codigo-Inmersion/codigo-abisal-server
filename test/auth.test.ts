@@ -2,32 +2,10 @@
 
 import supertest from "supertest";
 import { app } from "../src/app.js"; // Importamos la app de express
-import db_connection from "../src/database/db_connection.js";
-import UserModel from "../src/models/UserModel.js";
-import { Article } from "../src/models/ArticleModel.js";
+
 
 // Creamos un agente de supertest para hacer peticiones
 const request = supertest(app);
-
-// --- HOOKS DE JEST ---
-// Antes de que empiecen todos los tests...
-beforeAll(async () => {
-  // Conectamos a la base de datos de test
-  await db_connection.sync({ force: true }); // force: true borra y recrea las tablas
-});
-
-afterEach(async () => {
-  // Borramos en el orden correcto para respetar la clave foránea
-  await Article.destroy({ where: {} });
-  await UserModel.destroy({ where: {} });
-});
-
-// Después de que terminen todos los tests...
-afterAll(async () => {
-  // Cerramos la conexión a la base de datos
-  await db_connection.close();
-});
-
 // --- TESTS PARA REGISTRO ---
 describe("POST /auth/register", () => {
   
@@ -66,7 +44,8 @@ describe("POST /auth/register", () => {
       email: "test@example.com",
       password: "password123",
     };
-    await UserModel.create(user);
+    // await UserModel.create(user);
+    await request.post("/auth/register").send(user);
 
     // Intentamos registrarlo de nuevo con el mismo email
     const response = await request.post("/auth/register").send({
