@@ -5,6 +5,11 @@ import "./models/UserModel";
 import "./models/ArticleModel";
 import authRouter from "./routes/authRoutes.js";
 import articleRouter from "./routes/articleRoutes.js";
+import { User } from "./models/UserModel.js";
+import { Article } from "./models/ArticleModel.js";
+
+User.hasMany(Article, { foreignKey: 'creator_id' });
+Article.belongsTo(User, { foreignKey: 'creator_id' });
 
  export const app = express();
  const PORT = process.env.PORT || 8080;
@@ -30,4 +35,6 @@ async function startServer() {
   }
 }
 
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
