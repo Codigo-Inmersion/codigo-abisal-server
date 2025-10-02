@@ -1,54 +1,30 @@
-// {
-//   "compilerOptions": {
-//     /* --- Direcciones de los ficheros --- */
-//     "rootDir": "./src",               // El código fuente TypeScript está aquí.
-//     "outDir": "./dist",               // El código JavaScript compilado irá aquí.
-
-//     /* --- Entorno y Módulos --- */
-//     "module": "nodenext",             // Usa el sistema de módulos moderno de Node.
-//     "target": "esnext",               // Compila a la última versión de JS.
-//     "lib": ["esnext"],                // Librerías base para un entorno moderno.
-//     "esModuleInterop": true,          // Mejora la compatibilidad entre módulos.
-//     "skipLibCheck": true,             // Evita revisar los tipos de las librerías de terceros.
-
-//     /* --- Calidad y Reglas Estrictas (¡muy recomendado!) --- */
-//     "strict": true,                   // Activa todas las reglas estrictas.
-//     "forceConsistentCasingInFileNames": true, // Evita errores de mayúsculas/minúsculas en los nombres de archivo.
-//     "noUnusedLocals": true,           // Avisa si hay variables locales sin usar.
-//     "noUnusedParameters": true,       // Avisa si hay parámetros de función sin usar.
-
-//     /* --- Salida de la compilación --- */
-//     "sourceMap": true                 // Genera "mapas" para facilitar el debug.
-//   },
-//   "include": ["src/**/*"],            // Asegúrate de compilar todo lo que esté dentro de la carpeta src.
-//   "exclude": ["node_modules"]         // Ignora la carpeta node_modules.
-// }
-
 {
   "compilerOptions": {
     /* --- Rutas --- */
-    "rootDir": "./src",                 // Tu código .ts vive en src
-    "outDir": "./dist",                 // El JS compilado saldrá en dist
+    "rootDir": "./src", // Tu código .ts vive en src
+    "outDir": "./dist", // El JS compilado saldrá en dist
 
     /* --- Módulos/Entorno (Node ESM) --- */
-    "module": "nodenext",               // ESM nativo de Node
-    "moduleResolution": "nodenext",     // Resolver imports al estilo Node ESM
-    "target": "ES2022",                 // JS moderno compatible con Node 22
-    "lib": ["ES2022"],                  // Librerías base
-    "types": ["node"],                  // Tipos de Node (fs, process, etc.)
-    "resolveJsonModule": true,          // Permite import de .json (opcional)
+    "module": "nodenext", // ESM nativo de Node
+    "moduleResolution": "nodenext", // Resolver imports al estilo Node ESM
+    "target": "ES2022", // JS moderno compatible con Node 22
+    "lib": ["ES2022"], // Librerías base
+    "types": ["node", "jest"],
+    "resolveJsonModule": true, // Permite import de .json (opcional)
 
     /* --- Compatibilidad y calidad --- */
-    "esModuleInterop": true,            // Imports por defecto más cómodos
-    "skipLibCheck": true,               // Acelera compilación
-    "strict": true,                     // Reglas estrictas
+    "esModuleInterop": true, // Imports por defecto más cómodos
+    "skipLibCheck": true, // Acelera compilación
+    "strict": true, // Reglas estrictas
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "isolatedModules": true,
 
     /* --- Debug --- */
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*"], // <--- AÑADE "test/**/*" AQUÍ
   "exclude": ["node_modules"]
+
 }
