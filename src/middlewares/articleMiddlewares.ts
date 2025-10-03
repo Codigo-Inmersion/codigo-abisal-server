@@ -23,3 +23,4 @@ export function checkValidations(req: Request, res: Response, next: NextFunction
   // 6) Si no hay errores, seguimos al siguiente middleware/controlador
   next();
 }
+
