@@ -47,21 +47,25 @@ export const deleteArticle = async (req: Request, res: Response) => {
 
 export const createArticle = async (req: Request, res: Response) => {
   try {
-    //  Aquí filtramos los campos que sí queremos guardar
-    const {title, description, content, category, species, image, references, creator_id, } = req.body;
-     // Verifica si algún campo esencial falta
-    if (!title || !description || !content || !category || !species || !creator_id) {
-      console.error("Faltan datos necesarios para crear el artículo");
-      return res.status(400).json({ message: "Faltan datos necesarios" });
-    }
-    // Verifica si el creator_id existe en la base de datos
-    const user = await User.findByPk(creator_id);  // Busca al usuario por su ID
-    if (!user) {
+      // const user = await User.findByPk(creator_id);  // Busca al usuario por su ID
+    if (!req.user) {
       return res.status(400).json({ message: "El creador del artículo no existe." });
     }
 
+    //  Aquí filtramos los campos que sí queremos guardar
+    const {title, description, content, category, species, image, references, } = req.body;
+     // Verifica si algún campo esencial falta
+     const creator_id = req.user.userId
+     
+    if (!title || !description || !content || !category || !species ) {
+      console.error("Faltan datos necesarios para crear el artículo");
+      return res.status(400).json({ message: "Faltan datos necesarios" });
+    }
+ 
+    
     //  Creamos el artículo solo con esos campos (los demás se ignoran)
-    const newArticle = await Article.create({ 
+    
+    const newArticle = await Article.create({   
       title,
       description,
       content,
@@ -69,15 +73,16 @@ export const createArticle = async (req: Request, res: Response) => {
       species,
       image,
       references,
-      creator_id,
-    }).catch((error) => {
+      creator_id
+}).catch((error) => {
       console.error("Error en la base de datos:", error);
       throw new Error("Simulación de error en la base de datos");
     });
 
     return res.status(201).json(newArticle);
   } catch (error) {
-    return res.status(500).json({ message: "No se pudo crear el artículo" });
+     console.error("Error en la base de datos:", error);
+    return res.status(500).json({ message: "No se pudo crear el artículo", error });
   }
 };
 

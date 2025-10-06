@@ -1,5 +1,6 @@
 import supertest from "supertest";
 import { app } from "../src/app.js";
+import { Article } from "../src/models/ArticleModel.js"
 
 //Creamos el "agente" de supertest para enviar requests a la app.
 const request = supertest(app);
@@ -91,52 +92,31 @@ describe("Rutas de Artículos", () => {
     // Guardamos el id para los siguientes tests.
     createdId = String(res.body.id);
   });
+  // TEST: POST /article - error 500
+it("POST /article — debe devolver un error 500 si falla la creación", async () => {
+  // Preparamos un body válido (igual que tu test exitoso)
+  const body = makeArticle({
+    creator_id: adminId,
+    title: "FORCE_ERROR", // solo para identificar este caso si quieres
+  });
 
-// it("POST /articles - debe devolver un error 500 si no se puede crear el artículo", async () => {
-  
-//   const body = {
-//     title: "Nuevo artículo",
-//     description: "Descripción válida",
-//     content: "Este es un contenido de prueba con exactamente cien caracteres para la validación, si no los tiene nunca pasará los test porque en las validaciones le hemos puesto ese requisito.",
-//     category: "General",
-//     image: "https://imagen.com",  
-//     species: "Animal",
-//     creator_id: "admin_id"
-    
-//    };
+  // Forzamos que Article.create lance un error temporalmente
+  const originalCreate = Article.create;
+  Article.create = async () => {
+    throw new Error("Error forzado para test 500");
+  };
 
-//   // Enviamos la solicitud con el token de admin
-//   const res = await request
-//     .post("/article")
-//     .set("Authorization", `Bearer ${adminToken}`)
-//     .send(body);
+  const res = await request
+    .post("/article")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send(body);
 
-//   // Imprime la respuesta para ver el error
-//   console.log("Response body:", res.body);
+  expect(res.status).toBe(500);
+  expect(res.body).toHaveProperty("message", "No se pudo crear el artículo");
 
-//   // Verifica que la respuesta tenga el status 400 y el mensaje adecuado
-//   expect(res.status).toBe(500);
-//   expect(res.body).toHaveProperty("message", "No se pudo crear el artículo");
-// });
-
-  // it("POST /article - error 500 si falla la base de datos", async () => {
-  //   // Mock para forzar fallo en Article.create
-  //   jest.spyOn(Article, "create").mockImplementation(() => {
-  //     throw new Error("Fallo de base de datos simulado");
-  //   });
-
-  //   const body = makeArticle();
-  //   const res = await request
-  //     .post("/article")
-  //     .set("Authorization", `Bearer ${adminToken}`)
-  //     .send(body);
-
-  //   expect(res.status).toBe(500);
-  //   expect(res.body).toHaveProperty("message", "No se pudo crear el artículo");
-
-  //   // Restaurar implementación original
-  //   (Article.create as jest.Mock).mockRestore();
-  // });
+  // Restauramos la función original para que no afecte otros tests
+  Article.create = originalCreate;
+});
 
 
 
