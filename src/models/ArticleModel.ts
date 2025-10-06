@@ -75,7 +75,7 @@ Article.init(
       allowNull: false,
       validate: {
         notNull: { msg: "content no puede estar vacío" },
-        len: { args: [6, 255], msg: "content mínimo 6 caracteres" },
+        len: { args: [6, 65535], msg: "content mínimo 6 caracteres" },
       },
     },
     category: {
