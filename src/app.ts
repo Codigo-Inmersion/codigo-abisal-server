@@ -1,4 +1,3 @@
-(BigInt.prototype as any).toJSON = function () { return this.toString(); };
 import express from "express";
 import db_connection from "../src/database/db_connection.js";
 import "dotenv/config";

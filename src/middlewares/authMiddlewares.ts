@@ -93,7 +93,7 @@ export function handleValidation(req: Request, res: Response, next: NextFunction
     });
 
     return res.status(422).json({
-      message: "Errores de validación",
+      message: "Faltan datos necesarios",
       errors: flatErrors,
     });
   }
