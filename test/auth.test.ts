@@ -1,5 +1,3 @@
-// src/__tests__/auth.test.ts
-
 import supertest from "supertest";
 import { app } from "../src/app.js"; // Importamos la app de express
 
