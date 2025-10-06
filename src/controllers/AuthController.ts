@@ -118,16 +118,9 @@ export const loginController = async (
       where: { email: normalizedEmail } 
     });
     
-    if (!user) {
-      res.status(404).json({ message: "Usuario no encontrado" });
-      return;
-    }
-
-    // comparar contraseña ingresada con la hasheada en BD
-    const ok = await bcrypt.compare(password, user.password);
-    
-    if (!ok) {
-      res.status(401).json({ message: "Contraseña incorrecta" });
+if (!user || !(await bcrypt.compare(password, user.password))) {
+      // Devolvemos 401 con un mensaje genérico
+      res.status(401).json({ message: "Email o contraseña incorrectos" });
       return;
     }
 
