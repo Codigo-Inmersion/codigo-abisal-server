@@ -81,14 +81,14 @@ export const registerController = async (
     res.status(201).json({
       message: "Usuario registrado exitosamente",
       token,
-      user: {
-        id: newUser.id.toString(),
-        username: newUser.username,
-        email: newUser.email,
-        name: newUser.name,
-        last_name: newUser.last_name,
-        role: newUser.role,
-      },
+      // user: {
+      //   id: newUser.id.toString(),
+      //   username: newUser.username,
+      //   email: newUser.email,
+      //   name: newUser.name,
+      //   last_name: newUser.last_name,
+      //   role: newUser.role,
+      // },
     });
   } catch (error) {
     res.status(500).json({
@@ -141,14 +141,14 @@ export const loginController = async (
     res.status(200).json({ 
       message: "Login exitoso",
       token,
-      user: {
-        id: user.id.toString(),
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        last_name: user.last_name,
-        role: user.role,
-      },
+      // user: {
+      //   id: user.id.toString(),
+      //   username: user.username,
+      //   email: user.email,
+      //   name: user.name,
+      //   last_name: user.last_name,
+      //   role: user.role,
+      // },
     });
   } catch (error) {
     res.status(500).json({
