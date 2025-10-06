@@ -1,6 +1,6 @@
 import express from 'express';
 import {getAllArticles,getArticleById, deleteArticle,createArticle,updateArticle} from '../controllers/ArticleController.js';
-import { authMiddleware, requireRole, handleValidation} from '../middlewares/auth.js';
+import { authMiddleware, requireRole, handleValidation} from '../middlewares/authMiddlewares.js';
 import { createArticleValidators, updateArticleValidators, idParamValidators } from '../validators/articleValidators.js';
 import { checkValidations } from "../middlewares/articleMiddlewares.js";
 

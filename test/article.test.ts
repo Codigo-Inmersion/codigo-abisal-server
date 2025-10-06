@@ -91,6 +91,7 @@ describe("Rutas de Artículos", () => {
     // Guardamos el id para los siguientes tests.
     createdId = String(res.body.id);
   });
+
 // it("POST /articles - debe devolver un error 500 si no se puede crear el artículo", async () => {
   
 //   const body = {
@@ -118,7 +119,28 @@ describe("Rutas de Artículos", () => {
 //   expect(res.body).toHaveProperty("message", "No se pudo crear el artículo");
 // });
 
+  // it("POST /article - error 500 si falla la base de datos", async () => {
+  //   // Mock para forzar fallo en Article.create
+  //   jest.spyOn(Article, "create").mockImplementation(() => {
+  //     throw new Error("Fallo de base de datos simulado");
+  //   });
+
+  //   const body = makeArticle();
+  //   const res = await request
+  //     .post("/article")
+  //     .set("Authorization", `Bearer ${adminToken}`)
+  //     .send(body);
+
+  //   expect(res.status).toBe(500);
+  //   expect(res.body).toHaveProperty("message", "No se pudo crear el artículo");
+
+  //   // Restaurar implementación original
+  //   (Article.create as jest.Mock).mockRestore();
+  // });
+
+
 
   
 
-});
+ });
+
