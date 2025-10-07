@@ -1,17 +1,19 @@
 import { Article } from "../models/ArticleModel.js";
 import type { Request, Response} from "express";
-import User from "../models/UserModel.js";
+
 
 export const getAllArticles = async (_req: Request, res: Response) => {
-    try {
-        const articles = await Article.findAll()
-        res.status(200).json(articles)
-    } catch (error) {
-
-        res.status(500).json({ message: "Error obteniendo artículos", error });
+  try {
+    const articles = await Article.findAll();
+    if (!articles || articles.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron artículos' }); // Manejo explícito de error
     }
+    res.status(200).json(articles); // Devuelve los artículos
+  } catch (error) {
+    console.error('Error obteniendo artículos:', error);
+    res.status(500).json({ message: 'Error obteniendo artículos', error });
+  }
 };
-
 export const getArticleById = async (req: Request<{ id: string }>, res: Response) => {
     try {
 
@@ -47,22 +49,23 @@ export const deleteArticle = async (req: Request, res: Response) => {
 
 export const createArticle = async (req: Request, res: Response) => {
   try {
-      // const user = await User.findByPk(creator_id);  // Busca al usuario por su ID
-    if (!req.user) {
-      return res.status(400).json({ message: "El creador del artículo no existe." });
+      //  const user = await User.findByPk(creator_id);  // Busca al usuario por su ID
+     if (!req.user || !req.user.userId) {
+      return res.status(400).json({ message: "El creador del artículo no está autenticado." });
     }
 
     //  Aquí filtramos los campos que sí queremos guardar
     const {title, description, content, category, species, image, references, } = req.body;
      // Verifica si algún campo esencial falta
-     const creator_id = req.user.userId
+     const creator_id = Number(req.user.userId);
+   
+     console.log("Creador ID:", creator_id);  // Verifica que el creator_id sea correcto
      
     if (!title || !description || !content || !category || !species ) {
       console.error("Faltan datos necesarios para crear el artículo");
       return res.status(400).json({ message: "Faltan datos necesarios" });
-    }
- 
-    
+    }   
+   
     //  Creamos el artículo solo con esos campos (los demás se ignoran)
     
     const newArticle = await Article.create({   
@@ -82,7 +85,18 @@ export const createArticle = async (req: Request, res: Response) => {
     return res.status(201).json(newArticle);
   } catch (error) {
      console.error("Error en la base de datos:", error);
-    return res.status(500).json({ message: "No se pudo crear el artículo", error });
+   if (error instanceof Error) {
+      return res.status(500).json({
+        message: "No se pudo crear el artículo",
+        error: error.message // Ahora TypeScript sabe que 'error' tiene la propiedad 'message'
+      });
+    } else {
+      // Si el error no es una instancia de Error, enviamos un mensaje genérico
+      return res.status(500).json({
+        message: "No se pudo crear el artículo",
+        error: "Error desconocido"
+      });
+    }
   }
 };
 
@@ -96,6 +110,7 @@ interface UpdateArticleDTO {
   image?: string;
   references?: string;
 }
+
 export const updateArticle = async (
   req: Request<{ id: string }, unknown, UpdateArticleDTO>,
   res: Response

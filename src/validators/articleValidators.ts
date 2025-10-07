@@ -13,13 +13,13 @@ export const createArticleValidators = [
     .trim()
     .isLength({ min: 3 }).withMessage("description mínimo 3 caracteres"),
 
-  // content: string mínimo 100
-  body("content")
-    .isString().withMessage("content debe ser un string")
+ // category: Validación con enum
+  body("category")
+    .isString().withMessage("category debe ser un string")
     .trim()
-    .isLength({ min: 100 }).withMessage("content mínimo 100 caracteres"),
+    .isIn(['Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'])
+    .withMessage("category debe ser uno de los siguientes: 'Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'"),
 
-  // category: string mínimo 6
   body("category")
     .isString().withMessage("category debe ser un string")
     .trim()
@@ -77,7 +77,9 @@ export const updateArticleValidators = [
     .optional()
     .isString().withMessage("category debe ser un string")
     .trim()
-    .isLength({ min: 6 }).withMessage("category mínimo 6 caracteres"),
+    .isIn(['Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'])
+    .withMessage("category debe ser uno de los siguientes: 'Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'"),
+
 
   body("species")
     .optional()
