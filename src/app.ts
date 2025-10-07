@@ -10,7 +10,7 @@ import { User } from "./models/UserModel.js";
 import { Article } from "./models/ArticleModel.js";
 import passwordResetRouter from "./routes/passwordReset.routes.js";
 import "./models/PasswordResetToken.js";
-
+import cors from "cors"
 
 User.hasMany(Article, { foreignKey: 'creator_id' });
 Article.belongsTo(User, { foreignKey: 'creator_id' });
@@ -19,6 +19,7 @@ Article.belongsTo(User, { foreignKey: 'creator_id' });
  const PORT = process.env.PORT || 8080;
 
  app.use(express.json());
+ app.use(cors());
  app.get("/", (_req, res) => {
   res.send("Hola API");
 });
