@@ -25,7 +25,7 @@ async function startServer() {
   try {
     // Sincroniza los modelos con la base de datos
     await db_connection.sync(); // OJO: Ver las opciones más abajo
-    console.log("✅ Database synchronized successfully.");
+        console.log("✅ Database synchronized successfully.");
 
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);

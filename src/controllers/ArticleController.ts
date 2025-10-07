@@ -57,7 +57,7 @@ export const createArticle = async (req: Request, res: Response) => {
     //  Aquí filtramos los campos que sí queremos guardar
     const {title, description, content, category, species, image, references, } = req.body;
      // Verifica si algún campo esencial falta
-     const creator_id = BigInt(req.user.userId).toString();// Convierte BigInt a string si es necesario
+     const creator_id = Number(req.user.userId);
    
      console.log("Creador ID:", creator_id);  // Verifica que el creator_id sea correcto
      

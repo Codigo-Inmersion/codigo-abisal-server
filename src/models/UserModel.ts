@@ -2,19 +2,10 @@
 import { DataTypes, Model, Optional } from "sequelize";
 // 2) Importo mi conexión a la base de datos (tu Sequelize ya configurado)
 import db_connection from "../database/db_connection.js"
+import { UserAttributes } from "../interface/userInterface.js";
 
 // 3) Declaro cómo es un usuario en la BD (TODOS los campos)
-export interface UserAttributes {
-  id: bigint;
-  username: string;
-  email: string;
-  password: string;
-  name: string;
-  last_name: string;
-  role: string;
-  created_at: Date;
-  updated_at: Date;
-}
+
 
 // 4) Campos opcionales AL CREAR (Sequelize los rellena solo)
 export type UserCreationAttributes = Optional<
@@ -27,7 +18,7 @@ export class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  declare id: bigint;
+  declare id: number;
   declare username: string;
   declare email: string;
   declare password: string;
@@ -42,7 +33,7 @@ export class User
 User.init(
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
