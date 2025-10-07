@@ -2,17 +2,6 @@ import { Article } from "../models/ArticleModel.js";
 import type { Request, Response} from "express";
 
 
-
-
-// export const getAllArticles = async (_req: Request, res: Response) => {
-//     try {
-//         const articles = await Article.findAll()
-//         res.status(200).json(articles)
-//     } catch (error) {
-
-//         res.status(500).json({ message: "Error obteniendo artículos", error });
-//     }
-// };
 export const getAllArticles = async (_req: Request, res: Response) => {
   try {
     const articles = await Article.findAll();
@@ -68,17 +57,15 @@ export const createArticle = async (req: Request, res: Response) => {
     //  Aquí filtramos los campos que sí queremos guardar
     const {title, description, content, category, species, image, references, } = req.body;
      // Verifica si algún campo esencial falta
-    //  const creator_id = BigInt(req.user.userId).toString();
-      const creator_id = BigInt(req.user.userId)// Convierte BigInt a string si es necesario
+     const creator_id = BigInt(req.user.userId).toString();// Convierte BigInt a string si es necesario
    
      console.log("Creador ID:", creator_id);  // Verifica que el creator_id sea correcto
      
     if (!title || !description || !content || !category || !species ) {
       console.error("Faltan datos necesarios para crear el artículo");
       return res.status(400).json({ message: "Faltan datos necesarios" });
-    }
- 
-    
+    }   
+   
     //  Creamos el artículo solo con esos campos (los demás se ignoran)
     
     const newArticle = await Article.create({   
