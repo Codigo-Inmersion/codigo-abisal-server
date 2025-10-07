@@ -7,6 +7,9 @@ import authRouter from "./routes/authRoutes.js";
 import articleRouter from "./routes/articleRoutes.js";
 import { User } from "./models/UserModel.js";
 import { Article } from "./models/ArticleModel.js";
+import passwordResetRouter from "./routes/passwordReset.routes.js";
+import "./models/PasswordResetToken.js";
+
 
 User.hasMany(Article, { foreignKey: 'creator_id' });
 Article.belongsTo(User, { foreignKey: 'creator_id' });
@@ -20,6 +23,10 @@ Article.belongsTo(User, { foreignKey: 'creator_id' });
 });
 app.use("/auth", authRouter )
 app.use("/article", articleRouter)
+
+app.use("/auth", passwordResetRouter);
+
+await db_connection.sync({ alter: true }); // o { force: true } si quieres regenerar
 
 async function startServer() {
   try {

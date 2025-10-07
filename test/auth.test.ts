@@ -24,7 +24,7 @@ describe("POST /auth/register", () => {
     // 2. Comprobamos que la respuesta tenga un token
     expect(response.body).toHaveProperty("token");
 
-    // // 3. Comprobamos que el usuario devuelto sea el correcto (sin la contraseña)
+    // 3. Comprobamos que el usuario devuelto sea el correcto (sin la contraseña)
     // expect(response.body.user).toMatchObject({
     //   username: newUser.username,
     //   email: newUser.email,
@@ -113,7 +113,7 @@ describe("POST /auth/login", () => {
     const response = await request.post("/auth/login").send(credentials);
     
     expect(response.status).toBe(401);
-    expect(response.body.message).toBe("Contraseña incorrecta");
+    expect(response.body.message).toBe("Email o contraseña incorrectos");
   });
 
    it("debería devolver un error 404 si el usuario no existe", async () => {
@@ -124,8 +124,8 @@ describe("POST /auth/login", () => {
 
     const response = await request.post("/auth/login").send(credentials);
     
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe("Usuario no encontrado");
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Email o contraseña incorrectos");
   });
 
 });
