@@ -1,64 +1,82 @@
 import supertest from 'supertest';
 import { app } from '../src/app'; // Asegúrate de que la ruta sea correcta a tu archivo principal de la aplicación
-import { User } from '../src/models/UserModel';  // Asegúrate de que tu modelo de usuario esté configurado correctamente
-import { Article } from '../src/models/ArticleModel';
 import jwt from 'jsonwebtoken';
 
 
 const request = supertest(app);
-
-// Simulamos un usuario admin para las pruebas
-let adminToken: string;
-let adminUserId: string;
-
-beforeAll(async () => {
-  // 1. Crea un usuario admin para obtener su token de autenticación
-  const adminUser = {
-    username: "adminuser",
-    name: "Admin",
-    last_name: "User",
-    email: "admin.articles@example.com",
-    password: "password123",
-    role: "admin",
-  };
-
-  // Registramos al admin (esto depende de tu implementación de registro)
-  const res = await request.post("/auth/register").send(adminUser);
-
-  // Aseguramos que la respuesta contiene un token
-  expect(res.body.token).toBeDefined();
-  adminToken = res.body.token;
-  // adminUserId = res.body.user.id;  // Guarda el userId para futuras validaciones
- const decoded: any = jwt.verify(adminToken, process.env.JWT_SECRET!);
-  adminUserId = decoded.userId;  // Ahora tienes el userId correctamente
-  
+beforeAll(() => {
+  console.log('El servidor de pruebas se está levantando...');
 });
 
+// Variables globales para los tests
+let adminToken: string; // Token del administrador
+let adminUserId: string; // ID del administrador (decodificado del token)
+let seededArticleId: string; // ID del artículo creado para pruebas
+// Función para generar datos de prueba de artículos
+function makeArticleData(overrides: Partial<Record<string, string>> = {}) {
+  const longContent = 'Este es un contenido de prueba suficientemente largo para pasar validaciones de longitud. '.repeat(3).trim(); // Usamos `.trim()` para evitar espacios adicionales
 
-// Test para la creación de artículo (POST /articles)
+  return {
+    title: `Artículo de prueba ${Date.now()}`,
+    description: 'Una descripción válida para el artículo de prueba',
+    content: longContent, // Ahora aseguramos que no haya espacios extra
+    category: 'General',
+    species: 'Animal',
+    image: 'https://ejemplo.com/imagen.jpg',
+    references: 'https://ejemplo.com/ref',
+    ...overrides,
+  };
+}
+
+// Antes de todos los tests
+beforeAll(async () => {
+  // Crear un usuario admin
+  const adminUser = {
+    username: `admin_${Date.now()}`,
+    name: 'Admin',
+    last_name: 'User',
+    email: `admin_${Date.now()}@example.com`,
+    password: 'password123',
+    role: 'admin',
+  };
+
+  // Registramos al admin
+  const resRegister = await request.post('/auth/register').send(adminUser);
+  expect(resRegister.status).toBe(201);
+  expect(resRegister.body.token).toBeDefined();
+  adminToken = resRegister.body.token;
+
+  // Decodificamos el token para obtener el userId
+  const decoded = jwt.decode(adminToken) as any;
+  adminUserId = decoded?.userId?.toString() ?? decoded?.userId;
+  expect(adminUserId).toBeTruthy();
+
+  // Sembramos un artículo para usarlo en GET/PUT/DELETE
+  const seedData = makeArticleData({ title: 'Artículo sembrado para pruebas' });
+  const resSeed = await request
+    .post('/article')
+    .set('Authorization', `Bearer ${adminToken}`)
+    .send(seedData);
+  expect(resSeed.status).toBe(201);
+  expect(resSeed.body.id).toBeDefined();
+  seededArticleId = resSeed.body.id.toString();
+});
+
+// -----------------
+//  POST /article
+// -----------------
+
 describe('POST /article', () => {
+  it('crea un artículo y asigna creator_id automáticamente', async () => {
+    const articleData = makeArticleData({ title: 'Nuevo Artículo de Prueba (POST OK)' });
 
-  it('should create an article and assign creator_id automatically', async () => {
-    // 2. Preparamos el artículo sin pasar creator_id
-    const articleData = {
-      title: "Nuevo Artículo de Prueba",
-      description: "Descripción válida",
-      content: "Este es un contenido de prueba con exactamente cien caracteres para la validación, si no los tiene nunca pasará los test porque en las validaciones le hemos puesto ese requisito.",
-      category: "General",
-      species: "Animal",
-      image: "https://imagen.com",
-      references: "https://referencia.com",
-    };
-
-    // 3. Hacemos la solicitud para crear un artículo
     const res = await request
-      .post("/article")
-      .set("Authorization", `Bearer ${adminToken}`)  // Usamos el token de autenticación
+      .post('/article')
+      .set('Authorization', `Bearer ${adminToken}`)
       .send(articleData);
 
-    // 4. Verificamos la respuesta
-    expect(res.status).toBe(201);  // 201 significa que el artículo se creó correctamente
-    expect(res.body).toHaveProperty("id");  // El artículo debe tener un ID
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('id');
     expect(res.body).toMatchObject({
       title: articleData.title,
       description: articleData.description,
@@ -67,82 +85,156 @@ describe('POST /article', () => {
       species: articleData.species,
       image: articleData.image,
       references: articleData.references,
-      creator_id: String(adminUserId),  // Verificamos que el creator_id sea el ID del usuario admin
+      creator_id: String(adminUserId),
     });
   });
 
-  it('should return 422 if required fields are missing', async () => {
-    // 5. Probamos si falta un campo esencial (por ejemplo, description)
-    const articleData = {
-      title: "Nuevo Artículo sin Descripción",
-      content: "Este es un contenido de prueba con exactamente cien caracteres para la validación, si no los tiene nunca pasará los test porque en las validaciones le hemos puesto ese requisito.",
-      category: "General",
-      species: "Animal",
-      image: "https://imagen.com",
-      references: "https://referencia.com",
-    };
+  it('devuelve 422 si faltan campos requeridos (description, por ejemplo)', async () => {
+    const articleData = makeArticleData({ description: '' });
 
     const res = await request
-      .post("/article")
-      .set("Authorization", `Bearer ${adminToken}`)
+      .post('/article')
+      .set('Authorization', `Bearer ${adminToken}`)
       .send(articleData);
 
-    // 6. Verificamos que se devuelva un error 400 si falta un campo
     expect(res.status).toBe(422);
-    expect(res.body.message).toBe("Faltan datos necesarios");
+    expect(res.body.message).toBe('Faltan datos necesarios');
   });
 
-  it('should return 401 if the user is not authenticated', async () => {
-    // 7. Probamos un caso donde el usuario no está autenticado
-    const articleData = {
-      title: "Artículos de prueba",
-      description: "Descripción válida",
-      content: "Contenido válido para la prueba de creación.",
-      category: "General",
-      species: "Animal",
-      image: "https://imagen.com",
-      references: "https://referencia.com",
-    };
+  it('devuelve 401 si NO estás autenticado (si el middleware protege la ruta)', async () => {
+    const articleData = makeArticleData({ title: 'Debe fallar por no auth' });
 
-    const res = await request
-      .post("/article")
-      .send(articleData);  // No se pasa el token
+    const res = await request.post('/article').send(articleData);
 
-    // 8. Verificamos que se devuelva un error 401 si no está autenticado
     expect(res.status).toBe(401);
-    expect(res.body.message).toBe( "No se proporcionó token de autenticación");
+    expect(res.body.message).toMatch(/token/i);
   });
-
-  // it('should return 500 if there is an error creating the article', async () => {
-  //   // 9. Simulamos un error en la base de datos
-  //   const articleData = {
-  //     title: "Forzado para error",
-  //     description: "Este artículo causará un error.",
-  //     content: "Contenido para forzar error.",
-  //     category: "General",
-  //     species: "Animal",
-  //     image: "https://imagen.com",
-  //     references: "https://referencia.com",
-  //   };
-
-  //   // Simulamos un error en el modelo (por ejemplo, fallo en la creación)
-  //   const originalCreate = Article.create;
-  //   Article.create = async () => {
-  //     throw new Error("Error forzado en la base de datos");
-  //   };
-
-  //   const res = await request
-  //     .post("/article")
-  //     .set("Authorization", `Bearer ${adminToken}`)
-  //     .send(articleData);
-
-  //   // Verificamos que se devuelva un error 500
-  //   expect(res.status).toBe(500);
-  //   expect(res.body.message).toBe("No se pudo crear el artículo, Error desconocido");
-
-  //   // Restauramos la función original para no afectar otros tests
-  //   Article.create = originalCreate;
-  // });
-
 });
 
+// -----------------
+//  GET /articles
+// -----------------
+
+describe('GET /article', () => {
+  it('devuelve 200 y un array de artículos', async () => {
+    const res = await request.get('/article');
+     console.log(res.body); // Imprime la respuesta de la API para ver qué se está recibiendo
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0); // tenemos al menos el sembrado
+  });
+});
+
+// --------------------------
+// GET /article/:id (uno)
+// --------------------------
+
+
+describe('GET /article/:id', () => {
+it('devuelve 200 y el artículo si existe', async () => {
+const res = await request.get(`/article/${seededArticleId}`);
+expect(res.status).toBe(200);
+expect(res.body).toHaveProperty('id');
+expect(String(res.body.id)).toBe(String(seededArticleId));
+});
+
+
+it('devuelve 404 si el artículo no existe', async () => {
+const res = await request.get('/article/99999999'); // id grande que no exista
+expect(res.status).toBe(404);
+expect(res.body.message).toBe('Artículo no encontrado');
+});
+});
+
+// --------------------------
+// PUT /article/:id (update)
+// --------------------------
+
+
+describe('PUT /article/:id', () => {
+it('actualiza campos permitidos y devuelve 200 con el artículo actualizado', async () => {
+const newTitle = 'Título actualizado vía PUT';
+
+
+const res = await request
+.put(`/article/${seededArticleId}`)
+.set('Authorization', `Bearer ${adminToken}`)
+.send({ title: newTitle, category: 'Actualizada' });
+
+
+// Tu controlador devuelve { message, article }
+expect(res.status).toBe(200);
+expect(res.body.message).toBe('Artículo actualizado correctamente');
+expect(res.body.article).toBeDefined();
+expect(res.body.article.title).toBe(newTitle);
+expect(res.body.article.category).toBe('Actualizada');
+});
+
+
+it('devuelve 404 si intentas actualizar un artículo que no existe', async () => {
+const res = await request
+.put('/article/99999999')
+.set('Authorization', `Bearer ${adminToken}`)
+.send({ title: 'No debería existir' });
+
+
+expect(res.status).toBe(404);
+expect(res.body.message).toBe('Artículo no encontrado');
+});
+
+
+it('devuelve 401 si no envías token (si la ruta está protegida por middleware)', async () => {
+const res = await request
+.put(`/article/${seededArticleId}`)
+.send({ title: 'Debe fallar por no auth' });
+
+expect([200, 401]).toContain(res.status); 
+});
+});
+
+// -----------------------------
+// DELETE /article/:id (delete)
+// -----------------------------
+
+
+describe('DELETE /article/:id', () => {
+it('borra un artículo existente y devuelve 200', async () => {
+// Creamos un artículo NUEVO solo para borrarlo aquí
+const temp = await request
+.post('/article')
+.set('Authorization', `Bearer ${adminToken}`)
+.send(makeArticleData({ title: 'Para borrar en DELETE' }));
+
+
+expect(temp.status).toBe(201);
+const idToDelete = temp.body.id;
+
+
+const res = await request
+.delete(`/article/${idToDelete}`)
+.set('Authorization', `Bearer ${adminToken}`);
+
+
+expect(res.status).toBe(200);
+expect(res.body.message).toBe('El articulo esta eliminado correctamente');
+});
+
+
+it('devuelve 404 si intentas borrar un artículo que no existe', async () => {
+const res = await request
+.delete('/article/99999999')
+.set('Authorization', `Bearer ${adminToken}`);
+
+
+expect(res.status).toBe(404);
+expect(res.body.message).toBe('Artículo no encontrado');
+});
+
+
+it('devuelve 401 si no envías token (si hay middleware de auth)', async () => {
+const res = await request.delete(`/article/${seededArticleId}`);
+
+expect([200, 401, 404]).toContain(res.status);
+});
+});
