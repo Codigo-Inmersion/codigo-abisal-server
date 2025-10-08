@@ -2,22 +2,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 // 2) Importo mi conexión a la base de datos (tu Sequelize ya configurado)
 import db_connection from "../database/db_connection.js";
-
-// 3) Declaro cómo es un usuario en la BD (TODOS los campos)
-export interface ArticleAttributes {
-  id: bigint;
-  creator_id: bigint; //TENER EN CUENTA QUE DEBE VENIR DEL MODELO DE USER
-  title: string;
-  description: string;
-  content:string;
-  category: string;
-  species: string;
-  image?: string;
-  references?: string;
-//   likes_count: bigint;
-  created_at: Date;
-  updated_at: Date;
-}
+import { ArticleAttributes } from "../interface/articleInterface.js";
 
 // 4) Campos opcionales AL CREAR (Sequelize los rellena solo)
 export type ArticleCreationAttributes = Optional<
@@ -30,8 +15,8 @@ export class Article
   extends Model<ArticleAttributes, ArticleCreationAttributes>
   implements ArticleAttributes
 {
-  declare id: bigint;
-  declare creator_id: bigint;
+  declare id: number; // Cambié de 'bigint' a 'number' (equivalente a 'integer' en JS)
+  declare creator_id: number; // Cambié de 'bigint' a 'number' (equivalente a 'integer' en JS)
   declare title: string;
   declare description: string;
   declare content: string;
@@ -41,15 +26,13 @@ export class Article
   declare references: string;
   declare created_at: Date;
   declare updated_at: Date;
-
 }
-
 
 // 6) Inicializo (equivalente a define) y mapeo columnas/validaciones
 Article.init(
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER, // Cambié de DataTypes.BIGINT a DataTypes.INTEGER
       autoIncrement: true,
       primaryKey: true,
     },
@@ -58,7 +41,7 @@ Article.init(
       allowNull: false,
       validate: {
         notNull: { msg: "titulo no puede estar vacío" },
-        len: { args: [3, 255], msg: "username mínimo 3 caracteres" },
+        len: { args: [3, 255], msg: "titulo mínimo 3 caracteres" },
       },
     },
     description: {
@@ -66,10 +49,9 @@ Article.init(
       allowNull: false,
       validate: {
         notNull: { msg: "descripcion no puede estar vacío" },
-        len: { args: [3, 255], msg: "username mínimo 3 caracteres" },
+        len: { args: [3, 255], msg: "descripcion mínimo 3 caracteres" },
       },
     },
-    
     content: {
       type: DataTypes.TEXT("long"),
       allowNull: false,
@@ -78,44 +60,45 @@ Article.init(
         len: { args: [6, 65535], msg: "content mínimo 6 caracteres" },
       },
     },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
-       validate: {
-        notNull: { msg: "content no puede estar vacío" },
-        len: { args: [6, 255], msg: "content mínimo 6 caracteres" },
-      },
-    },
-
+   category: {
+  type: DataTypes.ENUM('Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'),
+  allowNull: false,
+  validate: {
+    notNull: { msg: "category no puede estar vacío" },
+    isIn: {
+      args: [['Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación']],  // Esta es la validación isIn
+      msg: "category debe ser uno de los siguientes: 'Fauna Abisal', 'Ecosistemas', 'Exploración', 'Conservación'"
+    }
+  },
+},
     species: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notNull: { msg: "content no puede estar vacío" },
-        len: { args: [6, 255], msg: "content mínimo 6 caracteres" },
+        notNull: { msg: "species no puede estar vacío" },
+        len: { args: [6, 255], msg: "species mínimo 6 caracteres" },
       },
     },
-      image: {
+    image: {
       type: DataTypes.STRING,
       allowNull: true,
-       validate: {
-        len: { args: [6, 255], msg: "content mínimo 6 caracteres" },
+      validate: {
+        len: { args: [6, 255], msg: "image mínimo 6 caracteres" },
       },
     },
-
-      references: {
+    references: {
       type: DataTypes.STRING,
       allowNull: true,
-       validate: {
-       len: { args: [6, 255], msg: "content mínimo 6 caracteres" },
+      validate: {
+        len: { args: [6, 255], msg: "references mínimo 6 caracteres" },
       },
     },
     creator_id: {
-      type: DataTypes.BIGINT,
-       allowNull: false,
-       references: {
+      type: DataTypes.INTEGER, // Cambié de DataTypes.BIGINT a DataTypes.INTEGER
+      allowNull: false,
+      references: {
         model: 'users',
-        key: 'id'
+        key: 'id',
       },
     },
     created_at: {
@@ -130,10 +113,10 @@ Article.init(
     },
   },
   {
-    sequelize: db_connection,           // ← tu conexión
-    tableName: "articles",      // ← nombre real de la tabla
-    timestamps: true,        // ← activa created/updated
-    underscored: true,       // ← columnas snake_case
+    sequelize: db_connection, // ← tu conexión
+    tableName: "articles", // ← nombre real de la tabla
+    timestamps: true, // ← activa created/updated
+    underscored: true, // ← columnas snake_case
     createdAt: "created_at", // ← mapea el nombre
     updatedAt: "updated_at", // ← mapea el nombre
   }
@@ -141,4 +124,3 @@ Article.init(
 
 // 7) ¡Exporto el modelo! (puedes default o nombrado)
 export default Article;
-
