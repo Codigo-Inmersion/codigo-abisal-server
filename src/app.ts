@@ -10,6 +10,7 @@ import { Article } from "./models/ArticleModel.js";
 import passwordResetRouter from "./routes/passwordReset.routes.js";
 import "./models/PasswordResetToken.js";
 import cors from "cors";
+import userRouter from "../src/routes/userRoutes.js"; // 👈 el nuevo archivo
 
 
 User.hasMany(Article, { foreignKey: 'creator_id' });
@@ -24,7 +25,7 @@ Article.belongsTo(User, { foreignKey: 'creator_id' });
 });
 app.use("/auth", authRouter )
 app.use("/article", articleRouter)
-
+app.use(userRouter); // /user/:id
 app.use("/auth", passwordResetRouter);
 
 await db_connection.sync({ alter: true }); // o { force: true } si quieres regenerar
