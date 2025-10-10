@@ -17,7 +17,7 @@ User.hasMany(Article, { foreignKey: 'creator_id' });
 Article.belongsTo(User, { foreignKey: 'creator_id' });
 
  export const app = express();
- const PORT = process.env.PORT || 8080;
+ const PORT = process.env.PORT || 8000;
  app.use(cors({ origin: "http://localhost:5174" })); // puerto de Vite
  app.use(express.json());
  app.get("/", (_req, res) => {
