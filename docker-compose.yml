@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-abisal
+    environment:
+      - MYSQL_ROOT_PASSWORD=alba2005   # contraseña del root
+      - MYSQL_DATABASE=abisal_app      # base de datos que se crea al iniciar
+      - MYSQL_USER=app                 # usuario normal (NO root)
+      - MYSQL_PASSWORD=alba2005        # contraseña app
+    ports:
+      - "3307:3306"                    # mapeo externo (puedes dejarlo o quitarlo)
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abisal-api
+    env_file: .env.docker
+    environment:
+      - DB_HOST=mysql
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
