@@ -18,9 +18,10 @@ services:
       retries: 10
 
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile // cuando se construye la imagen desde local ya no lo necesito la tengo en dockerhub ahora pongo:
+    image: gema284/codigo-abisal-server-api:dev
     container_name: abisal-api
     env_file: .env.docker
     environment:
