@@ -1,7 +1,10 @@
-import jwt from "jsonwebtoken";
+ import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret_change_in_production";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+
+// const JWT_SECRET = process.env.JWT_SECRET || "default_secret_change_in_production";
+// const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+const JWT_SECRET = (process.env.JWT_SECRET ?? "default_secret_change_in_production");
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? "7d");
 
 export interface TokenPayload {
   userId: bigint;
@@ -19,11 +22,19 @@ export const generateToken = (payload: TokenPayload): string => {
     email: payload.email,
     role: payload.role,
   };
+  // const options: SignOptions = { expiresIn: JWT_EXPIRES_IN };
 
-  return jwt.sign(sanitizedPayload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
+
+  // return jwt.sign(sanitizedPayload, JWT_SECRET, {
+  //   expiresIn: JWT_EXPIRES_IN,
+  const options: jwt.SignOptions = {
+    expiresIn: JWT_EXPIRES_IN as unknown as jwt.SignOptions["expiresIn"],
+  };
+
+  return jwt.sign(sanitizedPayload, JWT_SECRET as jwt.Secret, options);
 };
+
+
 
 /**
  * Verifica y decodifica un token JWT
