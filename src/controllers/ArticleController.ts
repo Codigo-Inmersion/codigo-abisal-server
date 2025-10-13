@@ -1,5 +1,6 @@
 import { Article } from "../models/ArticleModel.js";
 import type { Request, Response} from "express";
+import { User } from '../models/UserModel.js'; 
 
 
 export const getAllArticles = async (_req: Request, res: Response) => {
@@ -134,5 +135,66 @@ export const updateArticle = async (
     });
   } catch (_error) {
     return res.status(500).json({ message: "Error actualizando el artículo" });
+  }
+};
+
+export const likeArticle = async (req: Request, res: Response) => {
+  try {
+    const articleId = req.params.id;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'No estás logueado' });
+    }
+
+    const article = await Article.findByPk(articleId);
+    const user = await User.findByPk(String(userId));
+
+    // Si el artículo o el usuario no se encontraron, nos detenemos aquí.
+    if (!article || !user) {
+      return res.status(404).json({ message: 'Artículo o usuario no encontrado' });
+    }
+
+    // --- Si llegamos hasta aquí, TypeScript ya sabe que 'article' SÍ existe ---
+    
+    await (article as any).addLikedByUsers(user);
+    article.likes += 1; // Ahora esta línea es segura
+    await article.save();
+
+    res.status(200).json({ message: 'Like añadido', likes: article.likes });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+
+// Función para QUITAR like
+export const unlikeArticle = async (req: Request, res: Response) => {
+  try {
+    const articleId = req.params.id;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'No estás logueado' });
+    }
+
+    const article = await Article.findByPk(articleId);
+    const user = await User.findByPk(String(userId));
+
+    // Misma comprobación aquí
+    if (!article || !user) {
+      return res.status(404).json({ message: 'Artículo o usuario no encontrado' });
+    }
+
+    // --- Igual que antes, TypeScript ya sabe que 'article' existe ---
+
+    await (article as any).removeLikedByUsers(user);
+    article.likes = Math.max(0, article.likes - 1); // Y esta línea también es segura
+    await article.save();
+
+    res.status(200).json({ message: 'Like eliminado', likes: article.likes });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor' });
   }
 };
