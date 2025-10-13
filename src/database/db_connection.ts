@@ -9,7 +9,9 @@ const isTest = process.env.NODE_ENV === "test";
 
 // 3) Seguridad: en test, exige que la BD termine en _test
 if (isTest && process.env.DB_NAME && !process.env.DB_NAME.endsWith("_test")) {
-  throw new Error(`En test, DB_NAME debe terminar en "_test". Actual: ${process.env.DB_NAME}`);
+  throw new Error(
+    `En test, DB_NAME debe terminar en "_test". Actual: ${process.env.DB_NAME}`
+  );
 }
 
 // 4) Conexión
@@ -20,7 +22,9 @@ const db_connection = new Sequelize(
   {
     host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
-    logging: isTest ? false : console.log,
+    logging: console.log, // <-- CAMBIA ESTO
+
+    // logging: isTest ? false : console.log,
     define: { timestamps: false },
   }
 );
