@@ -1,5 +1,6 @@
 services:
-  # mysql:
+
+  # mysql: // todo esto lo he comentado porque esta es la BD MYSQL que yo tenia en local ahora ya no la necesito la he echo en la nube
   #   image: mysql:8.4
   #   container_name: mysql-abisal
   #   environment:
