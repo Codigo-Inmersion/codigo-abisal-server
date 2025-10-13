@@ -40,7 +40,9 @@ const isTest = process.env.NODE_ENV === "test";
 
 // 3) Seguridad: en test, exige que la BD termine en _test
 if (isTest && process.env.DB_NAME && !process.env.DB_NAME.endsWith("_test")) {
-  throw new Error(`En test, DB_NAME debe terminar en "_test". Actual: ${process.env.DB_NAME}`);
+  throw new Error(
+    `En test, DB_NAME debe terminar en "_test". Actual: ${process.env.DB_NAME}`
+  );
 }
 
 // 4) TLS opcional

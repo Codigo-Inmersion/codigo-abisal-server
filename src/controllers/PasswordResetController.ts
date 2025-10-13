@@ -39,8 +39,7 @@
 
 //   // Guarda token
 //   await PasswordResetToken.create({
-//     user_id: user.id,
-//     token_hash: tokenHash,
+//     user_id: user.id, //     token_hash: tokenHash,
 //     expires_at: expires,
 //   });
   
