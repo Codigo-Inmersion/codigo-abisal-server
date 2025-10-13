@@ -19,11 +19,11 @@ services:
   #     retries: 10
 
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile 
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile // cuando se construye la imagen desde local ya no lo necesito la tengo en dockerhub ahora pongo:
     container_name: abisal-api
-    # image: gema284/codigo-abisal-server-api:dev // cuando se construye la imagen desde local ya no lo necesito la tengo en dockerhub ahora pongo:
+    image: gema284/codigo-abisal-server-api:dev 
     env_file: .env.docker
     # environment:
     #   - DB_HOST=mysql
