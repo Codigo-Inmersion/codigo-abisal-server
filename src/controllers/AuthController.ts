@@ -73,7 +73,7 @@ export const registerController = async (
 
     // 4. Generar token JWT
     const token = generateToken({
-      userId: newUser.id,
+      userId: BigInt((newUser as any).id), // forzamos bigint desde id (que suele ser number en Sequelize)
       email: newUser.email,
       role: newUser.role,
     });
@@ -126,7 +126,7 @@ if (!user || !(await bcrypt.compare(password, user.password))) {
 
     // Generar token JWT
     const token = generateToken({
-      userId: user.id,
+     userId: BigInt((user as any).id), // forzamos bigint para que cumpla con TokenPayload.userId
       email: user.email,
       role: user.role,
     });
