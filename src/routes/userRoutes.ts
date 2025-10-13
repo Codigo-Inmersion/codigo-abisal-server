@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 import User from "../models/UserModel.js"
+import {getAllUsers, deleteUser, updateUser} from "../controllers/UserController.js";
+import { verifyToken, isAdmin } from "../middlewares/authMiddlewares.js";
 
 const router = Router();
 
@@ -33,5 +35,19 @@ router.get("/user/:id", async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error al obtener usuario" });
   }
 });
+
+router.use(verifyToken);
+router.use(isAdmin);
+
+// 🔒 Estas rutas requieren verifyToken + isAdmin
+
+// 🗑️ DELETE /user/:id - Eliminar usuario
+router.delete("/:id", verifyToken, isAdmin, deleteUser);
+
+// ✏️ PUT /user/:id - Actualizar usuario
+router.put("/:id", verifyToken, isAdmin, updateUser);
+
+// 📋 GET /users - Obtener todos los usuarios
+router.get("/", verifyToken, isAdmin, getAllUsers);
 
 export default router;
