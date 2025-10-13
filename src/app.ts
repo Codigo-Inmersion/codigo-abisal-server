@@ -33,7 +33,7 @@ app.use("/auth", passwordResetRouter);
 async function startServer() {
   try {
     // Sincroniza los modelos con la base de datos
-    await db_connection.sync({ alter: true }); 
+    await db_connection.sync(); 
         console.log("✅ Database synchronized successfully.");
 
     app.listen(PORT, () => {
