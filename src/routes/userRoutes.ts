@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import User from "../models/UserModel.js"
 import {getAllUsers, deleteUser, updateUser} from "../controllers/UserController.js";
-import { verifyToken, isAdmin } from "../middlewares/authMiddlewares.js";
+import { authMiddleware, requireRole } from "../middlewares/authMiddlewares.js";
 
 const router = Router();
 
@@ -36,18 +36,14 @@ router.get("/user/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.use(verifyToken);
-router.use(isAdmin);
-
-// 🔒 Estas rutas requieren verifyToken + isAdmin
-
-// 🗑️ DELETE /user/:id - Eliminar usuario
-router.delete("/:id", verifyToken, isAdmin, deleteUser);
-
-// ✏️ PUT /user/:id - Actualizar usuario
-router.put("/:id", verifyToken, isAdmin, updateUser);
 
 // 📋 GET /users - Obtener todos los usuarios
-router.get("/", verifyToken, isAdmin, getAllUsers);
+router.get("/", authMiddleware, requireRole(["admin"]), getAllUsers);
+
+// 🗑️ DELETE /user/:id - Eliminar usuario
+router.delete("/:id", authMiddleware, requireRole(["admin"]), deleteUser);
+
+// ✏️ PUT /user/:id - Actualizar usuario
+router.put("/:id", authMiddleware, requireRole(["admin"]), updateUser);
 
 export default router;
