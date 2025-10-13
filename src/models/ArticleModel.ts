@@ -28,7 +28,7 @@ export class Article
   declare references: string;
   declare created_at: Date;
   declare updated_at: Date;
-  declare likes?: number;
+  declare likes: number;
 }
 
 // 6) Inicializo (equivalente a define) y mapeo columnas/validaciones
