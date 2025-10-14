@@ -26,6 +26,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
+# Copiamos el certificado de TiDB dentro de la imagen
+COPY certs ./certs
+
 # Seguridad: no correr como root
 RUN addgroup -S app && adduser -S app -G app
 RUN chown -R app:app /app
