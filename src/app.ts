@@ -25,7 +25,7 @@ Article.belongsTo(User, { foreignKey: 'creator_id' });
 });
 app.use("/auth", authRouter )
 app.use("/article", articleRouter)
-app.use(userRouter); // /user/:id
+app.use("/users", userRouter);
 app.use("/auth", passwordResetRouter);
 
 // await db_connection.sync({ alter: true }); // o { force: true } si quieres regenerar
