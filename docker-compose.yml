@@ -1,36 +1,40 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: mysql-abisal
-    environment:
-      - MYSQL_ROOT_PASSWORD=alba2005   # contraseña del root
-      - MYSQL_DATABASE=abisal_app      # base de datos que se crea al iniciar
-      - MYSQL_USER=app                 # usuario normal (NO root)
-      - MYSQL_PASSWORD=alba2005        # contraseña app
-    ports:
-      - "3307:3306"                    # mapeo externo (puedes dejarlo o quitarlo)
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+
+  # mysql: // todo esto lo he comentado porque esta es la BD MYSQL que yo tenia en local ahora ya no la necesito la he echo en la nube
+  #   image: mysql:8.4
+  #   container_name: mysql-abisal
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=alba2005   # contraseña del root
+  #     - MYSQL_DATABASE=abisal_app      # base de datos que se crea al iniciar
+  #     - MYSQL_USER=app                 # usuario normal (NO root)
+  #     - MYSQL_PASSWORD=alba2005        # contraseña app
+  #   ports:
+  #     - "3307:3306"                    # mapeo externo (puedes dejarlo o quitarlo)
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 10
 
   api:
     # build:
     #   context: .
     #   dockerfile: Dockerfile // cuando se construye la imagen desde local ya no lo necesito la tengo en dockerhub ahora pongo:
-    image: gema284/codigo-abisal-server-api:dev
     container_name: abisal-api
+    image: gema284/codigo-abisal-server-api:dev 
     env_file: .env.docker
-    environment:
-      - DB_HOST=mysql
+    # environment:
+    #   - DB_HOST=mysql
     ports:
       - "8000:8000"
-    depends_on:
-      mysql:
-        condition: service_healthy
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
+    volumes:
+      - ./certs/tidb-ca.pem:/app/certs/tidb-ca.pem:ro
 
-volumes:
-  mysql_data:
+# volumes:
+
+#   mysql_data:
