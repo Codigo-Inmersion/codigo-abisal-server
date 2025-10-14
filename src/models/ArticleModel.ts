@@ -9,7 +9,7 @@ import { User } from './UserModel.js';
 // 4) Campos opcionales AL CREAR (Sequelize los rellena solo)
 export type ArticleCreationAttributes = Optional<
   ArticleAttributes,
-  "id" | "created_at" | "updated_at" | "image" | "references"
+  "id" | "created_at" | "updated_at" | "image" | "references" | "likes"
 >;
 
 // 5) Defino la clase del modelo (tipada)
@@ -28,7 +28,7 @@ export class Article
   declare references: string;
   declare created_at: Date;
   declare updated_at: Date;
-  declare likes?: number;
+  declare likes: number;
 }
 
 // 6) Inicializo (equivalente a define) y mapeo columnas/validaciones
