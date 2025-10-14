@@ -17,11 +17,14 @@ User.hasMany(Article, { foreignKey: 'creator_id' });
 Article.belongsTo(User, { foreignKey: 'creator_id' });
 
  export const app = express();
- const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 8000;
  app.use(cors({ origin: process.env.CORS_ORIGIN || "*" })); // puerto de Vite
  app.use(express.json());
  app.get("/", (_req, res) => {
   res.send("Hola API");
+});
+app.get("/healthz", (_req, res) => {
+  res.status(200).send("ok");
 });
 app.use("/auth", authRouter )
 app.use("/article", articleRouter)
