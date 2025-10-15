@@ -23,6 +23,7 @@ services:
     #   context: .
     #   dockerfile: Dockerfile // cuando se construye la imagen desde local ya no lo necesito la tengo en dockerhub ahora pongo:
     container_name: abisal-api
+    platform: linux/amd64
     image: gema284/codigo-abisal-server-api:dev 
     env_file: .env.docker
     # environment:
