@@ -32,9 +32,9 @@ services:
     # depends_on:
     #   mysql:
     #     condition: service_healthy
-    volumes:
-      - ./certs/tidb-ca.pem:/app/certs/tidb-ca.pem:ro
+    # volumes:
+    #   - ./certs/tidb-ca.pem:/app/certs/tidb-ca.pem:ro//este lo que quitado ahora porque lo he metido en la imagen dockerfile
 
 # volumes:
 
-#   mysql_data:
+#   mysql_data:// este lo quito porque apuntaba a la BD local de docker
