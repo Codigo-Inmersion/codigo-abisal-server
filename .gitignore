@@ -3,3 +3,13 @@ node_modules
 .env.test
 .DS_Store
 dist
+.env.docker
+
+# Certificados / claves
+certs/*.pem
+certs/*.key
+
+# Dumps y backups
+*.sql
+*.sql.gz
+*.dump

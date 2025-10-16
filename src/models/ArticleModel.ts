@@ -3,11 +3,13 @@ import { DataTypes, Model, Optional } from "sequelize";
 // 2) Importo mi conexión a la base de datos (tu Sequelize ya configurado)
 import db_connection from "../database/db_connection.js";
 import { ArticleAttributes } from "../interface/articleInterface.js";
+import { User } from './UserModel.js';
+
 
 // 4) Campos opcionales AL CREAR (Sequelize los rellena solo)
 export type ArticleCreationAttributes = Optional<
   ArticleAttributes,
-  "id" | "created_at" | "updated_at" | "image" | "references"
+  "id" | "created_at" | "updated_at" | "image" | "references" | "likes"
 >;
 
 // 5) Defino la clase del modelo (tipada)
@@ -26,6 +28,7 @@ export class Article
   declare references: string;
   declare created_at: Date;
   declare updated_at: Date;
+  declare likes: number;
 }
 
 // 6) Inicializo (equivalente a define) y mapeo columnas/validaciones
@@ -111,6 +114,11 @@ Article.init(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    likes: { // <-- AÑADIR ESTE CAMPO
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     sequelize: db_connection, // ← tu conexión
@@ -121,6 +129,21 @@ Article.init(
     updatedAt: "updated_at", // ← mapea el nombre
   }
 );
+
+export const UserLikes = db_connection.define('user_likes', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+}, {
+  timestamps: false,
+  tableName: 'user_likes',
+});
+
+User.belongsToMany(Article, { through: UserLikes, as: 'likedArticles' });
+Article.belongsToMany(User, { through: UserLikes, as: 'likedByUsers' });
+
 
 // 7) ¡Exporto el modelo! (puedes default o nombrado)
 export default Article;

@@ -8,7 +8,7 @@ export interface ArticleAttributes {
   species: string;
   image?: string;
   references?: string;
-//   likes_count: bigint;
+  likes: number;
   created_at: Date;
   updated_at: Date;
 }

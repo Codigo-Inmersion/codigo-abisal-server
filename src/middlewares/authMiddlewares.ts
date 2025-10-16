@@ -57,7 +57,7 @@ export const authMiddleware = (
 /**
  * Middleware que verifica si el usuario tiene un rol específico
  */
-export const requireRole = (...allowedRoles: string[]) => {
+export const requireRole = (allowedRoles: Array<string>) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({ message: "Usuario no autorizado" });

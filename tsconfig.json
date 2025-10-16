@@ -5,8 +5,8 @@
     "outDir": "./dist", // El JS compilado saldrá en dist
 
     /* --- Módulos/Entorno (Node ESM) --- */
-    "module": "nodenext", // ESM nativo de Node
-    "moduleResolution": "nodenext", // Resolver imports al estilo Node ESM
+    "module": "Nodenext", // ESM nativo de Node
+    "moduleResolution": "Nodenext", // Resolver imports al estilo Node ESM
     "target": "ES2022", // JS moderno compatible con Node 22
     "lib": ["ES2022"], // Librerías base
     "types": ["node", "jest"],
