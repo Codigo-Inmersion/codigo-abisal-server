@@ -310,6 +310,9 @@ test/
 └── jest.setup.ts         # Configuración de Jest
 ```
 
+### Descargar colección:
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/46421313/2sB3QNp8Mg)
+
 ### Cobertura Actual
 
 - ✅ Registro y login de usuarios
