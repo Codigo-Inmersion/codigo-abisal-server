@@ -498,8 +498,7 @@ Las contribuciones son bienvenidas. Por favor:
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia ISC. Ver el archivo `LICENSE` para más detalles.
-
+Este proyecto es con fines educativos y no tiene licencia comercial.
 ---
 
 ## 🙏 Agradecimientos
