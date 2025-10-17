@@ -24,7 +24,7 @@
 
 **Código Abisal** es una API REST robusta y escalable diseñada para gestionar artículos científicos y divulgativos sobre las profundidades del océano. El proyecto permite crear, editar, eliminar y consultar contenido sobre fauna abisal, ecosistemas marinos, exploraciones oceánicas y conservación.
 
-![Diagrama de la Base de Datos](./docs/image/drawSQL-image-export-2025-09-24_2.png)
+![Diagrama de la Base de Datos](./docs/image/drawSQL-image-export-2025-10-17.png)
 
 ### 🎯 Objetivo del Proyecto
 
